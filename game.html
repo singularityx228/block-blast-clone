@@ -18,7 +18,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%);
+            background: linear-gradient(180deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -26,6 +26,7 @@
             justify-content: center;
             padding: 10px;
             overflow: hidden;
+            touch-action: none;
         }
 
         .container {
@@ -42,10 +43,10 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            padding: 10px 15px;
-            background: linear-gradient(135deg, #ff6b35, #f7931e);
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
 
         .score-item {
@@ -70,74 +71,82 @@
         .game-board {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
-            gap: 2px;
-            background: #1a1a1a;
-            padding: 8px;
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+            gap: 3px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 12px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
         }
 
         .cell {
-            width: 38px;
-            height: 38px;
-            background: #2a2a2a;
-            border-radius: 4px;
-            transition: all 0.15s ease;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2a2a4a, #1a1a2e);
+            border-radius: 6px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05);
         }
 
         .cell.filled {
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.2);
+        }
+
+        .cell.highlight {
+            background: rgba(102, 126, 234, 0.3) !important;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
         }
 
         .cell.clearing {
-            animation: clear-animation 0.4s ease;
+            animation: clear-animation 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         @keyframes clear-animation {
             0% { transform: scale(1); opacity: 1; }
-            30% { transform: scale(1.15); opacity: 0.8; }
+            40% { transform: scale(1.2); opacity: 0.9; }
             100% { transform: scale(0); opacity: 0; }
         }
 
         .pieces-container {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             justify-content: center;
             flex-wrap: wrap;
-            padding: 15px;
-            background: linear-gradient(135deg, #2d2d2d, #3d3d3d);
-            border-radius: 15px;
-            min-height: 100px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 20px;
+            min-height: 120px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
         }
 
         .piece {
             cursor: grab;
-            transition: transform 0.15s ease;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
         }
 
         .piece:hover {
-            transform: scale(1.08);
+            transform: scale(1.1);
         }
 
         .piece.dragging {
             cursor: grabbing;
-            opacity: 0.9;
-            transform: scale(1.15);
-            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4));
+            opacity: 0.95;
+            transform: scale(1.2);
+            filter: drop-shadow(0 12px 24px rgba(0,0,0,0.5));
         }
 
         .piece-grid {
             display: grid;
-            gap: 1px;
+            gap: 2px;
         }
 
         .piece-cell {
-            width: 22px;
-            height: 22px;
-            border-radius: 3px;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            box-shadow: inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.2);
         }
 
         .piece.empty {

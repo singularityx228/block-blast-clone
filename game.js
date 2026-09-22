@@ -1,9 +1,9 @@
 // Block Blast Clone
 const BOARD_SIZE = 8;
 const COLORS = [
-    '#FF6B35', '#F7931E', '#FFD700', '#FF69B4',
-    '#4ECDC4', '#45B7D1', '#96CEB4', '#9B59B6',
-    '#E74C3C', '#3498DB', '#2ECC71', '#F39C12'
+    '#667eea', '#764ba2', '#f093fb', '#f5576c',
+    '#4facfe', '#00f2fe', '#43e97b', '#38f9d7',
+    '#fa709a', '#fee140', '#a8edea', '#fed6e3'
 ];
 
 let board = [];
@@ -211,6 +211,7 @@ function handleDrop(e) {
 // Touch handling for mobile
 let touchStartX, touchStartY;
 let touchPieceElement = null;
+let touchClone = null;
 
 function handleTouchStart(e) {
     e.preventDefault();
@@ -219,29 +220,53 @@ function handleTouchStart(e) {
     touchStartY = touch.clientY;
     touchPieceElement = e.target.closest('.piece');
     
+    if (!touchPieceElement) return;
+    
     const pieceIndex = parseInt(touchPieceElement.dataset.pieceIndex);
     draggedPiece = currentPieces[pieceIndex];
     draggedPieceData = { pieceIndex, element: touchPieceElement };
-    touchPieceElement.classList.add('dragging');
+    
+    // Create a clone for dragging
+    touchClone = touchPieceElement.cloneNode(true);
+    touchClone.style.position = 'fixed';
+    touchClone.style.pointerEvents = 'none';
+    touchClone.style.zIndex = '1000';
+    touchClone.style.left = touch.clientX - 50 + 'px';
+    touchClone.style.top = touch.clientY - 50 + 'px';
+    touchClone.classList.add('dragging');
+    document.body.appendChild(touchClone);
+    
+    touchPieceElement.style.opacity = '0.3';
 }
 
 function handleTouchMove(e) {
     e.preventDefault();
-    if (!touchPieceElement) return;
+    if (!touchClone) return;
     
     const touch = e.touches[0];
-    const deltaX = touch.clientX - touchStartX;
-    const deltaY = touch.clientY - touchStartY;
+    touchClone.style.left = touch.clientX - 50 + 'px';
+    touchClone.style.top = touch.clientY - 50 + 'px';
     
-    touchPieceElement.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1.2)`;
+    // Highlight valid positions
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+    const cell = element?.closest('.cell');
+    
+    if (cell && draggedPiece) {
+        const row = parseInt(cell.dataset.row);
+        const col = parseInt(cell.dataset.col);
+        highlightValidPositions(row, col, draggedPiece.shape);
+    } else {
+        clearHighlights();
+    }
 }
 
 function handleTouchEnd(e) {
-    if (!touchPieceElement) return;
+    if (!touchPieceElement || !touchClone) return;
     
     const touch = e.changedTouches[0];
-    touchPieceElement.style.transform = '';
-    touchPieceElement.classList.remove('dragging');
+    touchPieceElement.style.opacity = '1';
+    touchClone.remove();
+    touchClone = null;
     
     // Find the cell under the touch point
     const element = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -264,6 +289,7 @@ function handleTouchEnd(e) {
         }
     }
     
+    clearHighlights();
     touchPieceElement = null;
     draggedPiece = null;
     draggedPieceData = null;
@@ -344,7 +370,7 @@ function highlightValidPositions(startRow, startCol, shape) {
                     const boardCol = startCol + col;
                     const cell = document.querySelector(`[data-row="${boardRow}"][data-col="${boardCol}"]`);
                     if (cell) {
-                        cell.style.background = 'rgba(255, 255, 255, 0.3)';
+                        cell.classList.add('highlight');
                     }
                 }
             }
@@ -355,8 +381,9 @@ function highlightValidPositions(startRow, startCol, shape) {
 function clearHighlights() {
     const cells = document.querySelectorAll('.cell');
     cells.forEach(cell => {
+        cell.classList.remove('highlight');
         if (!cell.classList.contains('filled')) {
-            cell.style.background = '#2a2a2a';
+            cell.style.background = '';
         }
     });
 }
