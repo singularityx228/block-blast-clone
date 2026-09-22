@@ -1,17 +1,28 @@
 # Block Blast - Puzzle Oyunu
 
-Block Blast benzeri cross-platform puzzle oyunu. Windows, iOS, Android, Pardus ve tüm modern tarayıcılarda çalışır.
+Block Blast benzeri web tabanlı puzzle oyunu. Tüm modern tarayıcılarda çalışır.
 
 ## Özellikler
 
 - 🎮 Block Blast oyununun geliştirilmiş klonu
-- 📱 Cross-platform desteği (Windows, iOS, Android, Pardus)
-- 🌐 GitHub Pages üzerinden dağıtım
+- 🌐 Web tabanlı - tüm modern tarayıcılarda çalışır
+- 📱 Mobil uyumlu (iOS Safari, Android Chrome)
 - 💾 Yüksek skor kaydı (localStorage)
-- 🎨 Orijinal Block Blast teması
+- 🎨 Geliştirilmiş Block Blast teması
 - 🏆 Gelişmiş puan sistemi ve combo bonusları
 - 📲 PWA desteği - mobilde uygulama gibi kurulabilir
 - 🔇 Ses efektleri yok (tamamen sessiz)
+- 🎯 İyileştirilmiş dokunmatik kontroller
+
+## Platform Desteği
+
+Bu oyun **web tabanlıdır** ve şu platformlarda çalışır:
+
+- **Windows:** Chrome, Firefox, Edge, Safari
+- **iOS:** Safari (iPhone/iPad)
+- **Android:** Chrome, Firefox
+- **Pardus/Linux:** Firefox, Chrome
+- **Mac:** Safari, Chrome, Firefox
 
 ## Nasıl Oynanır
 
@@ -28,11 +39,10 @@ Bu oyun doğrudan tarayıcıda çalışır. Herhangi bir kurulum gerekmez.
 ### Web Sitesi
 
 🌐 **Ana Sayfa:** https://singularityx228.github.io/block-blast-clone/
-- İndirme butonları ve platform seçimi
-- Her platform için uygun indirme linkleri
+- Platform seçimi ve özellikler
 
 🎮 **Oyun Sayfası:** https://singularityx228.github.io/block-blast-clone/game.html
-- Doğrudan oyun oynama sayfası
+- Doğrudan oyun oynama
 
 ### GitHub Pages'te Çalıştırma
 
@@ -58,6 +68,10 @@ Sadece `game.html` dosyasını tarayıcınızda açın.
 - CSS3
 - Vanilla JavaScript
 - PWA (Progressive Web App)
+
+## Not
+
+Bu oyun bir web uygulamasıdır. App Store veya Play Store'da native bir uygulama değildir. Tüm platformlarda tarayıcı üzerinden çalışır.
 
 ## Lisans
 
