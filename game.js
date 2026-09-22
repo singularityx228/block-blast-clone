@@ -1,8 +1,9 @@
 // Block Blast Clone
 const BOARD_SIZE = 8;
 const COLORS = [
-    '#e94560', '#ff6b6b', '#4ecdc4', '#45b7d1', 
-    '#96ceb4', '#ffeaa7', '#dfe6e9', '#fd79a8'
+    '#FF6B35', '#F7931E', '#FFD700', '#FF69B4',
+    '#4ECDC4', '#45B7D1', '#96CEB4', '#9B59B6',
+    '#E74C3C', '#3498DB', '#2ECC71', '#F39C12'
 ];
 
 let board = [];
@@ -11,6 +12,7 @@ let highScore = localStorage.getItem('blockBlastHighScore') || 0;
 let currentPieces = [];
 let draggedPiece = null;
 let draggedPieceData = null;
+let comboCount = 0;
 
 // Initialize game
 function initGame() {
@@ -131,7 +133,7 @@ function createPieceElement(piece) {
             
             if (piece.shape[row][col] === 1) {
                 cell.style.background = piece.color;
-                cell.style.boxShadow = `inset 0 2px 4px rgba(255,255,255,0.3)`;
+                cell.style.boxShadow = `inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 4px rgba(0,0,0,0.2)`;
             } else {
                 cell.classList.add('empty');
             }
@@ -302,14 +304,20 @@ function placePiece(startRow, startCol, shape, color) {
         }
     }
     
-    // Score for placing
+    // Score for placing (Block Blast style)
     let blockCount = 0;
     for (let row = 0; row < shape.length; row++) {
         for (let col = 0; col < shape[0].length; col++) {
             if (shape[row][col] === 1) blockCount++;
         }
     }
-    score += blockCount;
+    
+    // Block Blast scoring: blocks give points based on complexity
+    let pieceScore = blockCount;
+    if (blockCount >= 5) pieceScore = blockCount * 2;
+    if (blockCount >= 8) pieceScore = blockCount * 3;
+    
+    score += pieceScore;
     updateScore();
 }
 
@@ -348,7 +356,7 @@ function clearHighlights() {
     const cells = document.querySelectorAll('.cell');
     cells.forEach(cell => {
         if (!cell.classList.contains('filled')) {
-            cell.style.background = 'rgba(255,255,255,0.05)';
+            cell.style.background = '#2a2a2a';
         }
     });
 }
@@ -400,7 +408,7 @@ function clearAndScore() {
                 for (let col = 0; col < BOARD_SIZE; col++) {
                     board[row][col] = null;
                     const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
-                    cell.style.background = 'rgba(255,255,255,0.05)';
+                    cell.style.background = '#2a2a2a';
                     cell.classList.remove('filled', 'clearing');
                 }
             });
@@ -409,20 +417,65 @@ function clearAndScore() {
                 for (let row = 0; row < BOARD_SIZE; row++) {
                     board[row][col] = null;
                     const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
-                    cell.style.background = 'rgba(255,255,255,0.05)';
+                    cell.style.background = '#2a2a2a';
                     cell.classList.remove('filled', 'clearing');
                 }
             });
             
-            // Score
+            // Block Blast style scoring
             const totalCleared = clearedRows.length + clearedCols.length;
-            score += totalCleared * 10;
-            if (totalCleared > 1) {
-                score += (totalCleared - 1) * 5; // Bonus for multiple clears
+            comboCount++;
+            
+            // Base points for each line cleared
+            let clearScore = totalCleared * 10;
+            
+            // Combo bonuses
+            if (comboCount >= 2) {
+                clearScore *= 1.5; // 2x combo
             }
+            if (comboCount >= 3) {
+                clearScore *= 2; // 3x combo
+            }
+            if (totalCleared >= 3) {
+                clearScore *= 1.5; // Multi-line bonus
+            }
+            if (totalCleared >= 5) {
+                clearScore *= 2; // Super clear bonus
+            }
+            
+            score += Math.floor(clearScore);
+            
+            // Show combo text
+            if (comboCount >= 2 || totalCleared >= 2) {
+                showComboText(comboCount, totalCleared);
+            }
+            
             updateScore();
-        }, 300);
+        }, 400);
+    } else {
+        comboCount = 0; // Reset combo if no lines cleared
     }
+}
+
+function showComboText(combo, lines) {
+    const comboDisplay = document.createElement('div');
+    comboDisplay.className = 'combo-display';
+    
+    if (combo >= 3) {
+        comboDisplay.textContent = `${combo}x COMBO!`;
+    } else if (lines >= 3) {
+        comboDisplay.textContent = `${lines} LINES!`;
+    } else if (combo >= 2) {
+        comboDisplay.textContent = `${combo}x COMBO!`;
+    } else {
+        comboDisplay.textContent = 'NICE!';
+    }
+    
+    document.body.appendChild(comboDisplay);
+    
+    setTimeout(() => {
+        comboDisplay.remove();
+    }, 800);
 }
 
 function checkGameOver() {

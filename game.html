@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Block Blast - Puzzle Oyunu</title>
+    <meta name="description" content="Block Blast benzeri puzzle oyunu - blokları yerleştir, satır ve sütunları tamamla!">
+    <meta name="theme-color" content="#2d2d2d">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 420px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 10px 15px;
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .score-value {
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 2px;
+            background: #1a1a1a;
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .cell {
+            width: 38px;
+            height: 38px;
+            background: #2a2a2a;
+            border-radius: 4px;
+            transition: all 0.15s ease;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .cell.filled {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+
+        .cell.clearing {
+            animation: clear-animation 0.4s ease;
+        }
+
+        @keyframes clear-animation {
+            0% { transform: scale(1); opacity: 1; }
+            30% { transform: scale(1.15); opacity: 0.8; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        .pieces-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 15px;
+            background: linear-gradient(135deg, #2d2d2d, #3d3d3d);
+            border-radius: 15px;
+            min-height: 100px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .piece {
+            cursor: grab;
+            transition: transform 0.15s ease;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .piece:hover {
+            transform: scale(1.08);
+        }
+
+        .piece.dragging {
+            cursor: grabbing;
+            opacity: 0.9;
+            transform: scale(1.15);
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4));
+        }
+
+        .piece-grid {
+            display: grid;
+            gap: 1px;
+        }
+
+        .piece-cell {
+            width: 22px;
+            height: 22px;
+            border-radius: 3px;
+        }
+
+        .piece.empty {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .game-over {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .game-over.hidden {
+            display: none;
+        }
+
+        .game-over h2 {
+            color: #ff6b35;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(255, 107, 53, 0.5);
+        }
+
+        .game-over p {
+            color: #fff;
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
+        }
+
+        .combo-display {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            font-weight: 800;
+            color: #ff6b35;
+            text-shadow: 0 4px 15px rgba(255, 107, 53, 0.6);
+            pointer-events: none;
+            z-index: 999;
+            animation: combo-pop 0.8s ease forwards;
+        }
+
+        @keyframes combo-pop {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            30% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -70%) scale(1); opacity: 0; }
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        @media (max-width: 450px) {
+            .cell {
+                width: 34px;
+                height: 34px;
+            }
+
+            .piece-cell {
+                width: 19px;
+                height: 19px;
+            }
+
+            .score-value {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .cell {
+                width: 30px;
+                height: 30px;
+            }
+
+            .piece-cell {
+                width: 17px;
+                height: 17px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.location.href='index.html'">← Geri</button>
+    
+    <div class="container">
+        <div class="header">
+            <div class="score-item">
+                <div class="score-label">Skor</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">En Yüksek</div>
+                <div class="score-value" id="high-score">0</div>
+            </div>
+        </div>
+
+        <div class="game-board" id="game-board"></div>
+
+        <div class="pieces-container" id="pieces-container"></div>
+    </div>
+
+    <div class="game-over hidden" id="game-over">
+        <h2>Oyun Bitti!</h2>
+        <p>Skorunuz: <span id="final-score">0</span></p>
+        <button class="restart-btn" onclick="restartGame()">Yeniden Başla</button>
+    </div>
+
+    <script src="game.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(registration => console.log('Service Worker registered'))
+                .catch(error => console.log('Service Worker registration failed'));
+        }
+    </script>
+</body>
+</html>

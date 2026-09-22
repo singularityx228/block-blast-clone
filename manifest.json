@@ -2,10 +2,10 @@
   "name": "Block Blast - Puzzle Oyunu",
   "short_name": "Block Blast",
   "description": "Block Blast benzeri puzzle oyunu - blokları yerleştir, satır ve sütunları tamamla!",
-  "start_url": "./index.html",
+  "start_url": "./game.html",
   "display": "standalone",
-  "background_color": "#1a1a2e",
-  "theme_color": "#1a1a2e",
+  "background_color": "#2d2d2d",
+  "theme_color": "#2d2d2d",
   "orientation": "portrait",
   "scope": "./",
   "icons": [

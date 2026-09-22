@@ -14,7 +14,7 @@ def create_icon(size):
     
     # Draw blocks
     block_size = size // 4
-    colors = ['#e94560', '#4ecdc4', '#45b7d1', '#ffeaa7']
+    colors = ['#FF6B35', '#F7931E', '#FFD700', '#4ECDC4']
     
     blocks = [
         (0, 0, colors[0]),

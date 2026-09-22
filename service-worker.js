@@ -1,7 +1,8 @@
-const CACHE_NAME = 'block-blast-v1';
+const CACHE_NAME = 'block-blast-v2';
 const urlsToCache = [
     './',
     './index.html',
+    './game.html',
     './game.js',
     './manifest.json',
     './icon-192.png',
